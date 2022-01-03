@@ -48,15 +48,25 @@ public class DbOperations
     /// <returns></returns>
     private static string GetConnectionString(Options options)
     {
-        return new SqlConnectionStringBuilder
+        var builder = new SqlConnectionStringBuilder
         {
             DataSource = options.ServerName,
             InitialCatalog = options.DatabaseName,
-            UserID = options.User,
-            Password = options.Password,
             ConnectTimeout = 5,
-            Encrypt = options.IsEncrypted
-        }.ToString();
+        };
+
+        if (options.UseTrustedConnection)
+        {
+            builder.IntegratedSecurity = true;
+        }
+        else
+        {
+            builder.UserID = options.User;
+            builder.Password = options.Password;
+            builder.Encrypt = options.IsEncrypted;
+        }
+
+        return builder.ConnectionString;
     }
 
     /// <summary>

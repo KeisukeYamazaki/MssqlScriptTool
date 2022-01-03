@@ -13,6 +13,7 @@ public class Options
     public const string optiond                = "-d";
     public const string optionN                = "-N";
     public const string optionf                = "-f";
+    public const string optione                = "-E";
     public const string optionExcludeObjects   = "--exclude-objects";
     public const string optionIncludeObjects   = "--include-objects";
     public const string optionScriptDropCreate = "--script-drop-create";
@@ -24,14 +25,15 @@ public class Options
 
     public Options(List<CommandOption> options)
     {
-        ServerName     = GetValue(options, optionS, true);
-        User           = GetValue(options, optionU, true);
-        Password       = GetValue(options, optionP, false);
-        DatabaseName   = GetValue(options, optiond, true);
-        IsEncrypted    = GetBoolValue(options, optionN);
-        OutputFilePath = GetValue(options, optionf, false);
-        ExcludeObjects = GetValues(options, optionExcludeObjects, false);
-        IncludeObjects = GetValues(options, optionIncludeObjects, false);
+        ServerName           = GetValue(options, optionS, true);
+        User                 = GetValue(options, optionU, false);
+        Password             = GetValue(options, optionP, false);
+        DatabaseName         = GetValue(options, optiond, true);
+        IsEncrypted          = GetBoolValue(options, optionN);
+        OutputFilePath       = GetValue(options, optionf, false);
+        UseTrustedConnection = GetBoolValue(options, optione);
+        ExcludeObjects       = GetValues(options, optionExcludeObjects, false);
+        IncludeObjects       = GetValues(options, optionIncludeObjects, false);
 
         if (ExcludeObjects.Count > 0 && IncludeObjects.Count > 0)
         {
@@ -48,6 +50,7 @@ public class Options
     public string DatabaseName { get; set; }
     public bool IsEncrypted { get; set; }
     public string OutputFilePath { get; set; }
+    public bool UseTrustedConnection { get; set; }
     public List<string> ExcludeObjects { get; set; }
     public List<string> IncludeObjects { get; set; }
     [JsonConverter(typeof(JsonStringEnumConverter))]
@@ -82,6 +85,10 @@ public class Options
             new CommandOption(template: optionf, optionType: CommandOptionType.SingleValue)
             {
                 Description = "出力するファイルパス"
+            },
+            new CommandOption(template: optione, optionType: CommandOptionType.NoValue)
+            {
+                Description = "Windows認証で接続"
             },
             new CommandOption(template: optionExcludeObjects, optionType: CommandOptionType.MultipleValue)
             {
