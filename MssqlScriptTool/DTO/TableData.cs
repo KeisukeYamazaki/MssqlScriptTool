@@ -184,7 +184,7 @@ public class TableData
                     // DateTime2 の場合は ミリ秒のフォーマットを digits によって変える(TODO: DateTime2 以外の対応)
                     var digits = column.Digits ?? 7;  // Digits が null なら、デフォルトの 7 とする。
                     var format = $"yyyy-MM-ddTHH:mm:ss.{string.Join("", Enumerable.Range(0, digits).Select(_ => "f"))}";
-                    var datetimeStr = reader.GetDateTime(i).ToString(format);
+                    var datetimeStr = reader.IsDBNull(i) ? null : reader.GetDateTime(i).ToString(format);
                     builder.Append(funcTypeFuncDict[column.DataType.ToString().ToLower()](datetimeStr));
                 }
                 else

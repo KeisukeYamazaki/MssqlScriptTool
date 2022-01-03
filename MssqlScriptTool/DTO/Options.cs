@@ -13,7 +13,7 @@ public class Options
     public const string optiond                = "-d";
     public const string optionN                = "-N";
     public const string optionf                = "-f";
-    public const string optione                = "-E";
+    public const string optionE                = "-E";
     public const string optionExcludeObjects   = "--exclude-objects";
     public const string optionIncludeObjects   = "--include-objects";
     public const string optionScriptDropCreate = "--script-drop-create";
@@ -31,15 +31,23 @@ public class Options
         DatabaseName         = GetValue(options, optiond, true);
         IsEncrypted          = GetBoolValue(options, optionN);
         OutputFilePath       = GetValue(options, optionf, false);
-        UseTrustedConnection = GetBoolValue(options, optione);
+        UseTrustedConnection = GetBoolValue(options, optionE);
+        if (!UseTrustedConnection && (User == string.Empty || Password == string.Empty))
+        {
+            // Windows認証でない(=SQLServer認証)で User,Passwordが指定されていない場合は例外を出す
+            throw new ArgumentException(
+                $"「{optionU}(ユーザー名)」・「{optionP}(パスワード)」を指定してください。Windows統合認証の場合は「{optionE}」を指定してください。");
+        }
+
+
         ExcludeObjects       = GetValues(options, optionExcludeObjects, false);
         IncludeObjects       = GetValues(options, optionIncludeObjects, false);
-
         if (ExcludeObjects.Count > 0 && IncludeObjects.Count > 0)
         {
             // ExcludeObjects,IncludeObjects どちらも指定された場合は例外を出す
             throw new ArgumentException($"[{optionExcludeObjects}],[{optionIncludeObjects}] を同時に指定することはできません。");
         }
+
         DropCreate = GetDropCreateValue(options);
         SchemeData = GetSchemeDataValue(options);
     }
@@ -86,7 +94,7 @@ public class Options
             {
                 Description = "出力するファイルパス"
             },
-            new CommandOption(template: optione, optionType: CommandOptionType.NoValue)
+            new CommandOption(template: optionE, optionType: CommandOptionType.NoValue)
             {
                 Description = "Windows認証で接続"
             },

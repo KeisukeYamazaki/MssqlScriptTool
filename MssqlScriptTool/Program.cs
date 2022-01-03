@@ -33,7 +33,7 @@ namespace MssqlScriptTool
                 }
                 catch (Exception e)
                 {
-                    Logger.Error(e.ToString);
+                    Logger.Error($"エラーが発生しました。処理を終了します。エラー内容[{e.ToString()}]");
                 }
                 
                 // app.Options.ForEach(o => Console.WriteLine($"{o.Template}: {o.Value()}"));
